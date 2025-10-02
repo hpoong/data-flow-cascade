@@ -34,34 +34,9 @@ services:
 
 
 
-  # ---------------- PostgreSQL ----------------
-#  postgres:
-#    image: postgres:15
-#    container_name: data-flow-cascade-postgres
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: admin
-#      POSTGRES_PASSWORD: admin
-#      POSTGRES_DB: main
-#    command:
-#      - "postgres"
-#      - "-c"
-#      - "wal_level=logical"
-#      - "-c"
-#      - "max_wal_senders=10"
-#      - "-c"
-#      - "max_replication_slots=10"
-#      - "-c"
-#      - "max_worker_processes=10"
-#    volumes:
-#      - ./postgresql-data:/var/lib/postgresql/data
-#    networks: [dev-net]
-
-
   # ---------------- connect ----------------
   connect:
-    image: debezium/connect:2.4
+    image: debezium-connect-jdbc-sink:2.4
     container_name: data-flow-cascade-connect
     depends_on: [ kafka ]
     ports: [ "8083:8083" ]
@@ -77,15 +52,6 @@ services:
       KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
     networks: [ dev-net ]
-
-  debezium-ui:
-    image: debezium/debezium-ui:2.4
-    container_name: data-flow-cascade-debezium-ui
-    depends_on: [connect]
-    ports: ["8080:8080"]
-    environment:
-      KAFKA_CONNECT_URIS: "http://connect:8083"
-    networks: [dev-net]
 
 # ---------------- Set ----------------
 volumes:
